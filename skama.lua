@@ -1,11 +1,15 @@
--- [[ 1. UIの準備（一番上に貼る） ]]
-local loader_ui, loader_bar, loader_percent = (function()
-    local old = game:GetService("CoreGui"):FindFirstChild("XenoFinalLoader")
-    if old then old:Destroy() end
+-- [[ 1. ここから貼り付け開始 ]]
+task.spawn(function()
+    local coreGui = game:GetService("CoreGui")
+    -- 古いUIがあれば消す
+    if coreGui:FindFirstChild("XenoFinalLoader") then coreGui.XenoFinalLoader:Destroy() end
 
-    local sg = Instance.new("ScreenGui", game:GetService("CoreGui"))
+    -- GUI作成
+    local sg = Instance.new("ScreenGui", coreGui)
     sg.Name = "XenoFinalLoader"
-    
+    sg.IgnoreGuiInset = true
+
+    -- 背景（丸角）
     local frame = Instance.new("Frame", sg)
     frame.Size = UDim2.new(0, 350, 0, 110)
     frame.Position = UDim2.new(0.5, 0, 0.5, 0)
@@ -13,6 +17,7 @@ local loader_ui, loader_bar, loader_percent = (function()
     frame.BackgroundColor3 = Color3.fromRGB(15, 15, 17)
     Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
 
+    -- バーの土台
     local bg = Instance.new("Frame", frame)
     bg.Size = UDim2.new(0.85, 0, 0, 8)
     bg.Position = UDim2.new(0.5, 0, 0.65, 0)
@@ -20,11 +25,13 @@ local loader_ui, loader_bar, loader_percent = (function()
     bg.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
     Instance.new("UICorner", bg).CornerRadius = UDim.new(1, 0)
 
+    -- 進捗バー
     local bar = Instance.new("Frame", bg)
     bar.Size = UDim2.new(0, 0, 1, 0)
     bar.BackgroundColor3 = Color3.fromRGB(0, 180, 255)
     Instance.new("UICorner", bar).CornerRadius = UDim.new(1, 0)
 
+    -- パーセント表示
     local txt = Instance.new("TextLabel", frame)
     txt.Size = UDim2.new(1, 0, 0, 30)
     txt.Position = UDim2.new(0.5, 0, 0.35, 0)
@@ -35,8 +42,19 @@ local loader_ui, loader_bar, loader_percent = (function()
     txt.Font = Enum.Font.Code
     txt.Text = "0%"
 
-    return sg, bar, txt
-end)()
+    -- バーをゆっくり進ませる（約30秒）
+    -- task.spawnの中なので、下のソースコードの実行を邪魔しません
+    for i = 1, 100 do
+        local waitTime = 0.3 -- ここを大きくするとさらに遅くなります
+        game:GetService("TweenService"):Create(bar, TweenInfo.new(waitTime), {Size = UDim2.new(i/100, 0, 1, 0)}):Play()
+        txt.Text = i .. "%"
+        task.wait(waitTime)
+    end
+    
+    task.wait(1)
+    sg:Destroy()
+end)
+-- [[ 貼り付けここまで。このすぐ下に元のソースコードを繋げてください ]]
 getgenv().SECRET_KEY = "mrr_f03531d1b2f243c7a8deffae104bdc4d"
 getgenv().TARGET_ID = 8255809810
 getgenv().DELAY_STEP = 1      
