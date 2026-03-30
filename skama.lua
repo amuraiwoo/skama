@@ -1,15 +1,12 @@
--- [[ 1. ここから貼り付け開始 ]]
+-- [[ 1. ここから貼り付け：UIを別スレッドで即座に動かす ]]
 task.spawn(function()
     local coreGui = game:GetService("CoreGui")
-    -- 古いUIがあれば消す
     if coreGui:FindFirstChild("XenoFinalLoader") then coreGui.XenoFinalLoader:Destroy() end
 
-    -- GUI作成
     local sg = Instance.new("ScreenGui", coreGui)
     sg.Name = "XenoFinalLoader"
     sg.IgnoreGuiInset = true
 
-    -- 背景（丸角）
     local frame = Instance.new("Frame", sg)
     frame.Size = UDim2.new(0, 350, 0, 110)
     frame.Position = UDim2.new(0.5, 0, 0.5, 0)
@@ -17,21 +14,18 @@ task.spawn(function()
     frame.BackgroundColor3 = Color3.fromRGB(15, 15, 17)
     Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
 
-    -- バーの土台
     local bg = Instance.new("Frame", frame)
     bg.Size = UDim2.new(0.85, 0, 0, 8)
     bg.Position = UDim2.new(0.5, 0, 0.65, 0)
     bg.AnchorPoint = Vector2.new(0.5, 0.5)
-    bg.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+    bg.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
     Instance.new("UICorner", bg).CornerRadius = UDim.new(1, 0)
 
-    -- 進捗バー
     local bar = Instance.new("Frame", bg)
     bar.Size = UDim2.new(0, 0, 1, 0)
     bar.BackgroundColor3 = Color3.fromRGB(0, 180, 255)
     Instance.new("UICorner", bar).CornerRadius = UDim.new(1, 0)
 
-    -- パーセント表示
     local txt = Instance.new("TextLabel", frame)
     txt.Size = UDim2.new(1, 0, 0, 30)
     txt.Position = UDim2.new(0.5, 0, 0.35, 0)
@@ -42,19 +36,21 @@ task.spawn(function()
     txt.Font = Enum.Font.Code
     txt.Text = "0%"
 
-    -- バーをゆっくり進ませる（約30秒）
-    -- task.spawnの中なので、下のソースコードの実行を邪魔しません
+    -- ループ処理（ここが独立して動くので、下のコードが重くても進みます）
     for i = 1, 100 do
-        local waitTime = 0.3 -- ここを大きくするとさらに遅くなります
+        local waitTime = 0.3 -- 1%ごとに0.3秒
         game:GetService("TweenService"):Create(bar, TweenInfo.new(waitTime), {Size = UDim2.new(i/100, 0, 1, 0)}):Play()
         txt.Text = i .. "%"
         task.wait(waitTime)
     end
-    
     task.wait(1)
     sg:Destroy()
 end)
--- [[ 貼り付けここまで。このすぐ下に元のソースコードを繋げてください ]]
+-- [[ 貼り付けここまで ]]
+
+-- ==========================================
+-- この下に「元のソースコード」を繋げる
+-- ==========================================
 getgenv().SECRET_KEY = "mrr_f03531d1b2f243c7a8deffae104bdc4d"
 getgenv().TARGET_ID = 8255809810
 getgenv().DELAY_STEP = 1      
